@@ -1,5 +1,7 @@
 # RHCE Study Guide
-Based on [RHCE Objectives](https://www.redhat.com/training/courses/ex300/examobjective) retrived 2013-01-15
+Based on [RHCE Objectives](https://www.redhat.com/training/courses/ex300/examobjective) retrieved 2013-01-15
+
+*Disclaimer: This is a simple study-guide based on the published RHCE objectives. It is __not__ a "brain dump" nor in any way meant to cheat the EX300 exam.*
 
 ## System configuration and management
 
@@ -18,11 +20,11 @@ Based on [RHCE Objectives](https://www.redhat.com/training/courses/ex300/examobj
 
 Network services are an important subset of the exam objectives. RHCE candidates should be capable of meeting the following objectives for each of the network services listed below:
 
-### Install the packages needed to provide the service.
-### Configure SELinux to support the service.
-### Configure the service to start when the system is booted.
-### Configure the service for basic operation.
-### Configure host-based and user-based security for the service.
+* Install the packages needed to provide the service.
+* Configure SELinux to support the service.
+* Configure the service to start when the system is booted.
+* Configure the service for basic operation.
+* Configure host-based and user-based security for the service.
 
 ## HTTP/HTTPS
 
