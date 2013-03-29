@@ -139,6 +139,7 @@ iscsiadm -m discoverydb -t st -p 192.168.0.5 -D
 /etc/init.d/iscsi start
 /etc/init.d/iscsi status
 chkconfig iscsi on
+```
 ### Produce and deliver reports on system utilization (processor, memory, disk, and network).
 ### Use shell scripting to automate system maintenance tasks.
 ### Configure a system to log to a remote system.
