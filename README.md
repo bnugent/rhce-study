@@ -7,42 +7,55 @@ Based on [RHCE Objectives](https://www.redhat.com/training/courses/ex300/examobj
 
 ### Route IP traffic and create static routes.
 * Set a default route:
-        ip route add default dev eth0
-        # OR using next hop IP
-        ip route add default via 192.168.0.1 
+
+    ip route add default dev eth0
+    # OR using next hop IP
+    ip route add default via 192.168.0.1 
 * Create a static route:
+
     ip route add 172.16.0.0/12 dev eth1
     # OR via next hop IP
     ip route add 172.16.0.0/12 via 192.168.0.1
 ### Use iptables to implement packet filtering and configure network address translation (NAT).
 #### Packet Filtering
 * List current iptables rules:
+
     iptables -nvL
 * List current iptables rules in /etc/sysconfig/iptables format:
+
     iptables -vS
 * Set default policy for filter table:
+
     iptables -P INPUT DROP
     iptables -P FORWARD DROP
     iptables -P OUTPUT ACCEPT
 * Allow SSH:
+
     iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 * Allow HTTP/S:
+
     iptables -A INPUT -p tcp --dport 80 -j ACCEPT
     iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 * Block a suspicious network:
+
     iptables -A INPUT -i eth0 -s 192.168.8.0/24 -j DROP
 #### Network Address Translation (NAT)
 1. Configure iptables for IP masquerading
+
     # eth0 is public; eth1 is private on a 192.168.9.9/24 network:
     iptables -t nat -A POSTROUTING -s 192.168.0.0/24 -o eth1 -j MASQUERADE
 2. Enable IP Forwarding
 * edit /etc/sysctl.conf and change the following:
+
     net.ipv4.ip_forward = 1
 * reload sysctl settings:
+
     sysctl -p
 * OPTIONAL: enable IP forwarding for current running system:
+
     echo 1 > /proc/sys/net/ipv4/ip_forward
 3. Configure iptables to allow forwarding between interfaces:
+
     iptables -A FORWARD -o eth1 -j ACCEPT
     iptables -A FORWARD -o eth0 -j ACCEPT
 ### Use /proc/sys and sysctl to modify and set kernel runtime parameters.
