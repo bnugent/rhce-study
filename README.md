@@ -112,6 +112,13 @@ net.bridge.bridge-nf-call-iptables = 0
 net.bridge.bridge-nf-call-arptables = 0
 ```
 ### Configure a system to authenticate using Kerberos.
+```bash
+# GUI
+system-config-authentication
+# Console
+authconfig-tui
+```
+
 ### Build a simple RPM that packages a single file.
 ```bash
 yum install rpmdevtools
@@ -126,6 +133,12 @@ rpmdev-newspec rpmbuild/SPECS/example.spec
 rpm -ba rpmbuild/SPECS/example.spec
 ```
 ### Configure a system as an iSCSI initiator that persistently mounts an iSCSI target.
+```bash
+yum install iscsi-initiator-utils
+iscsiadm -m discoverydb -t st -p 192.168.0.5 -D
+/etc/init.d/iscsi start
+/etc/init.d/iscsi status
+chkconfig iscsi on
 ### Produce and deliver reports on system utilization (processor, memory, disk, and network).
 ### Use shell scripting to automate system maintenance tasks.
 ### Configure a system to log to a remote system.
