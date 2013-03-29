@@ -7,9 +7,9 @@ Based on [RHCE Objectives](https://www.redhat.com/training/courses/ex300/examobj
 
 ### Route IP traffic and create static routes.
 * Set a default route:
-    ip route add default dev eth0
-    # OR using next hop IP
-    ip route add default via 192.168.0.1 
+        ip route add default dev eth0
+        # OR using next hop IP
+        ip route add default via 192.168.0.1 
 * Create a static route:
     ip route add 172.16.0.0/12 dev eth1
     # OR via next hop IP
