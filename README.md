@@ -249,7 +249,8 @@ NameVirtualHost *:80
 </VirtualHost>
 ```
 ### Configure private directories.
-* Use *AuthType* above ^^
+* Use *AuthType* above 
+
 ### Deploy a basic CGI application.
 * Edit /etc/httpd/conf/httpd.conf
 
