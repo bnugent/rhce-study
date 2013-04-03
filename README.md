@@ -141,10 +141,38 @@ iscsiadm -m discoverydb -t st -p 192.168.0.5 -D
 chkconfig iscsi on
 ```
 ### Produce and deliver reports on system utilization (processor, memory, disk, and network).
-### Use shell scripting to automate system maintenance tasks.
-### Configure a system to log to a remote system.
-### Configure a system to accept logging from a remote system.
+* Any permutation of `ps`, `top`, `sar` will do.
 
+### Use shell scripting to automate system maintenance tasks.
+*N/A*
+### Configure a system to log to a remote system.
+* Send via UDP to 192.168.8.3:514
+
+```bash
+# /etc/rsyslog.conf
+*.* @192.168.8.3:514
+```
+* Send via TCP to 192.168.8.3:514
+
+```bash
+# /etc/rsyslog.conf:
+*.* @@192.168.8.3:514
+```
+### Configure a system to accept logging from a remote system.
+* Accept via UDP on port 514
+
+```bash
+# /etc/rsyslog.conf:
+$ModLoad imudp
+$UDPServerRun 514
+```
+* Accept via TCP on port 514
+
+```bash
+# /etc/rsyslog.conf:
+$ModLoad imtcp
+$InputTCPServerRun 514
+```
 ## Network services
 
 Network services are an important subset of the exam objectives. RHCE candidates should be capable of meeting the following objectives for each of the network services listed below:
@@ -156,14 +184,120 @@ Network services are an important subset of the exam objectives. RHCE candidates
 * Configure host-based and user-based security for the service.
 
 ## HTTP/HTTPS
+* Install the packages needed to provide the service.
 
+```bash
+yum install httpd
+# Alternately, install the default packages in the "Web Server" group
+yum groupinstall "Web Server"
+```
+* Configure SELinux to support the service.
+
+```bash
+# show SELinux booleans for http
+getsebool -a | grep http
+
+# Create a web directory (for vhosts)
+mkdir -p /www
+chcon -R -u system_u /www/
+chcon -R -t httpd_sys_content_t /www/
+semanage fcontext -a -s system_u -t httpd_sys_content_t /www/
+```
+* Configure the service to start when the system is booted.
+
+```bash
+chkconfig httpd on
+```
+* Configure the service for basic operation.
+1. Install httpd
+2. Set httpd to start on boot
+3. Configure SELinux booleans
+4. Open port 80 in iptables
+* Configure host-based and user-based security for the service.
+  * Host
+
+```bash
+iptables -A INPUT -m state --state NEW -m tcp -p tcp -s 192.168.8.0/24 --dport 80 -j ACCEPT
+```
+```apache
+# Alternately via .htaccess
+Order deny,allow
+Deny from all
+Allow from 192.168.8.8
+```
+  * User
+
+```bash
+htpasswd -c /var/www/.htpasswd user
+```
+```apache
+AuthType Basic
+AuthName "Private Area"
+AuthUserFile /var/www/.htpasswd
+Require valid-user
+Order deny,allow
+Deny from all
+```
 ### Configure a virtual host.
+* Create /etc/httpd/conf.d/virtualhost.conf
+
+```apache
+NameVirtualHost *:80
+<VirtualHost *:80>
+  ServerName vhost.example.com
+  DocumentRoot /path/to/docroot
+</VirtualHost>
+```
 ### Configure private directories.
+* Use *AuthType* above ^^
 ### Deploy a basic CGI application.
+* Edit /etc/httpd/conf/httpd.conf
+
+```apache
+<Directory /var/www/html>
+...
+  Options +ExecCGI
+  AddHandler cgi-script .pl
+...
+</Directory>
+```
+```bash
+httpd -t && service httpd restart
+```
+* Create a script
+
+```bash
+cat > /var/www/html/hello.pl <EOF
+#!/usr/bin/perl
+print "Content-type: text/html\n\n";
+print "Hello!";
+EOF
+
+chmod 755 /var/www/html/hello.pl
+```
+* Make SELinux work
+
+```bash
+chcon --reference=/var/www/cgi-bin hello.pl
+# persist (non-optimal, but works)
+semanage fcontext -a -s system_u -t httpd_sys_script_exec_t /var/www/html/hello.pl
+```
 ### Configure group-managed content.
+```bash
+groupadd webdesigners
+gpasswd -a user1 webdesigners
+gpasswd -a user2 webdesigners
+mkdir -p /www/site1
+chown -R apache:webdesigners /www/site1
+chmod 2775 /www/site1
+```
 
 ## DNS
-
+* Install the packages needed to provide the service.
+* Configure SELinux to support the service.
+* Configure the service to start when the system is booted.
+* Configure the service for basic operation.
+* Configure host-based and user-based security for the service.
 ### Configure a caching-only name server.
 ### Configure a caching-only name server to forward DNS queries.
 ### Note: Candidates are not expected to configure master or slave name servers.
