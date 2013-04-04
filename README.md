@@ -209,10 +209,10 @@ semanage fcontext -a -s system_u -t httpd_sys_content_t /www/
 chkconfig httpd on
 ```
 * Configure the service for basic operation.
-1. Install httpd
-2. Set httpd to start on boot
-3. Configure SELinux booleans
-4. Open port 80 in iptables
+  1. Install httpd
+  2. Set httpd to start on boot
+  3. Configure SELinux booleans
+  4. Open port 80 in iptables
 * Configure host-based and user-based security for the service.
   * Host
 
@@ -295,15 +295,75 @@ chmod 2775 /www/site1
 
 ## DNS
 * Install the packages needed to provide the service.
+
+```bash
+yum install bind
+```
+* Configure SELinux to support the service.
+
+```bash
+getsebool -a | grep named
+# or
+man named_selinux
+```
+* Configure the service to start when the system is booted.
+
+```bash
+chkconfig named on
+```
+* Configure the service for basic operation.
+  1. Install service
+  2. “Configure a caching-only name server”
+  3. Configure the service to start when the system is booted
+  4. Configure SELinux support
+  5. Update /etc/sysconfig/iptables:
+
+```bash
+iptables -A INPUT -p tcp -m tcp --dport 53 -j ACCEPT
+iptables -A INPUT -p udp -m udp --dport 53 -j ACCEPT
+```
+* Configure host-based and user-based security for the service.
+  * Can be done via `iptables` and/or the `allow-query` directive in /etc/named.conf
+
+### Configure a caching-only name server.
+* This is default when you install named, but limited to the localhost. Just open up to the network.
+
+```named
+# /etc/named.conf:
+...
+acl good_ips { 192.168.8.0/24; 127.0.0.0/8 };
+...
+options {
+  listen-on port 53 {
+    127.0.0.1;
+    192.168.8.5;
+  };
+  ...
+  allow-query { good_ips; };
+  allow-query-cache { good_ips };
+  recursion yes;
+  ...
+};
+```
+### Configure a caching-only name server to forward DNS queries.
+* Same caching config as above, but also add the following under options:
+
+```named
+...
+  forwarders {
+    192.168.8.1;
+  };
+  forward first;
+...
+```
+### Note: Candidates are not expected to configure master or slave name servers.
+
+## FTP
+* Install the packages needed to provide the service.
 * Configure SELinux to support the service.
 * Configure the service to start when the system is booted.
 * Configure the service for basic operation.
 * Configure host-based and user-based security for the service.
-### Configure a caching-only name server.
-### Configure a caching-only name server to forward DNS queries.
-### Note: Candidates are not expected to configure master or slave name servers.
-
-## FTP
 
 ### Configure anonymous-only download.
 
