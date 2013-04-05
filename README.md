@@ -368,26 +368,160 @@ options {
 ### Configure anonymous-only download.
 
 ## NFS
+* Install the packages needed to provide the service.
+* Configure SELinux to support the service.
+* Configure the service to start when the system is booted.
+* Configure the service for basic operation.
+* Configure host-based and user-based security for the service.
 
 ### Provide network shares to specific clients.
 ### Provide network shares suitable for group collaboration.
 
 ## SMB
+* Install the packages needed to provide the service.
+* Configure SELinux to support the service.
+* Configure the service to start when the system is booted.
+* Configure the service for basic operation.
+* Configure host-based and user-based security for the service.
 
 ### Provide network shares to specific clients.
 ### Provide network shares suitable for group collaboration.
 
 ## SMTP
+* Install the packages needed to provide the service.
+
+```bash
+yum groupinstall "E-mail server"
+```
+* Configure SELinux to support the service.
+
+```bash
+getsebool -a | grep postfix
+```
+* Configure the service to start when the system is booted.
+
+```bash
+chkconfig postfix on
+```
+* Configure the service for basic operation.
+  1. Install postfix
+  2. Configure postfix to run on boot
+  3. Configure SELinux
+  4. Open port 25 in `iptables`
+* Configure host-based and user-based security for the service.
+  * User:
+
+```postfix
+# /etc/postfix/main.cf:
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = noanonymous
+broken_sasl_auth_clients = yes
+smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination
+```
+```bash
+service saslauthd start
+service saslauthd start
+chkconfig saslauthd on
+```
+* Host:
+  * Use `iptables`
 
 ### Configure a mail transfer agent (MTA) to accept inbound email from other systems.
+```postfix
+# /etc/postfix/main.cf
+...
+myhostname = mail.example.com
+...
+mydomain = example.com
+...
+inet_interfaces = all
+...
+mydestination = $mydomain, $myhostname, localhost.$mydomain, localhost
+...
+mynetworks = 192.168.8.0/24, 127.0.0.0/8
+```
 ### Configure an MTA to forward (relay) email through a smart host.
+```postfix
+# /etc/postfix/main.cf
+...
+relayhost = 192.168.100.5
+```
 
 ## SSH
+* Install the packages needed to provide the service.
+
+```bash
+# should be installed already, but:
+yum install openssh
+```
+* Configure SELinux to support the service.
+*N/A*
+
+* Configure the service to start when the system is booted.
+
+```bash
+chkconfig sshd on
+```
+* Configure the service for basic operation.
+  1. Install ssh
+  2. Configure sshd to run on boot
+  3. Configure SELinux
+  4. Open port 22 in `iptables`
+* Configure host-based and user-based security for the service.
+  * Host: Use TCPWrappers via /etc/hosts.allow and/or `iptables`
+  * User: `AllowUsers user@host` in /etc/ssh/sshd_config
 
 ### Configure key-based authentication.
+* Enable:
+
+```bash
+# /etc/ssh/sshd_config:
+...
+PubKeyAuthentication yes
+...
+```
+* Setup keys
+
+```bash
+ssh-keygen -t rsa
+```
 ### Configure additional options described in documentation.
 
 ## NTP
+* Install the packages needed to provide the service.
+
+```bash
+yum install ntp
+```
+* Configure SELinux to support the service.
+*N/A*
+
+* Configure the service to start when the system is booted.
+
+```bash
+chkconfig ntpd on
+```
+* Configure the service for basic operation.
+  1. Install NTP
+  2. Chkconfig NTP on
+  3. Edit /etc/ntp.conf to work as a server
+  4. Start ntpd
+  5. Open port 123
+* Configure host-based and user-based security for the service.
+  * Use `iptables`
 
 ### Synchronize time using other NTP peers.
+  * Edit /etc/ntp.conf
 
+```bash
+# Remove, at minimum, the nopeer restriction option
+restrict default kod nomodify notrap noquery
+...
+# Allow hosts on local network to query
+restrict 192.168.8.0 mask 255.255.255.0 nomodify notrap
+...
+# Use an upstream server
+server 0.rhel.pool.ntp.org
+server 1.rhel.pool.ntp.org
+server 2.rhel.pool.ntp.org
+```
