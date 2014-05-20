@@ -397,9 +397,31 @@ write_enable=NO
 
 ## NFS
 * Install the packages needed to provide the service.
+
+```bash
+yum groupinstall "NFS file server"
+```
 * Configure SELinux to support the service.
+
+```bash
+getsebool -a | grep nfs
+```
 * Configure the service to start when the system is booted.
+
+```bash
+chkconfig rpcbind on
+chkconfig nfs on
+chkconfig nfslock on
+```
 * Configure the service for basic operation.
+
+```bash
+cat > /etc/exports <<'EOF'
+/some/folder client.example.com(ro, sync)
+EOF
+
+exportfs -a
+```
 * Configure host-based and user-based security for the service.
 
 ### Provide network shares to specific clients.
