@@ -360,12 +360,40 @@ options {
 
 ## FTP
 * Install the packages needed to provide the service.
+
+```bash
+yum -y install vsftpd
+```
 * Configure SELinux to support the service.
+
+```bash
+getsebool -a | grep ftp
+```
 * Configure the service to start when the system is booted.
+
+```bash
+chkconfig vsftpd on
+```
 * Configure the service for basic operation.
+
+```bash
+service vsftpd start
+```
 * Configure host-based and user-based security for the service.
 
+```bash
+- tcpwrappers
+- /etc/pam.d/vsftpd
+- /etc/vsftpd/vsftpd.conf
+```
 ### Configure anonymous-only download.
+
+* In `/etc/vsftpd/vsftpd.conf` set:
+
+```
+local_enable=NO
+write_enable=NO
+```
 
 ## NFS
 * Install the packages needed to provide the service.
