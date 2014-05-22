@@ -423,6 +423,7 @@ EOF
 exportfs -a
 ```
 * Configure host-based and user-based security for the service.
+This is handled by specifying clients in /etc/exports and using iptables
 
 ### Provide network shares to specific clients.
 ### Provide network shares suitable for group collaboration.
