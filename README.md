@@ -430,8 +430,24 @@ This is handled by specifying clients in /etc/exports and using iptables
 
 ## SMB
 * Install the packages needed to provide the service.
+
+```bash
+yum -y groupinstall "CIFS file server"
+```
 * Configure SELinux to support the service.
+
+```bash
+getsebool -a | grep samba
+chcon -R -t samba_share_t /share 
+semanage fcontext -a -t samba_share_t /share #persists reboot
+```
 * Configure the service to start when the system is booted.
+
+```bash
+chkconfig smb on
+chkconfig nmb on
+chkconfig winbind on
+```
 * Configure the service for basic operation.
 * Configure host-based and user-based security for the service.
 
