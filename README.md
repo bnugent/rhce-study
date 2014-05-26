@@ -449,8 +449,38 @@ chkconfig nmb on
 chkconfig winbind on
 ```
 * Configure the service for basic operation.
+
+```bash
+mkdir -p /some/share
+chmod 755 /some/share
+vim /etc/samba/smb.conf
+
+## file: /etc/samba/smb.conf
+   [global]
+   workgroup = PRETALOKA
+   security = SHARE
+   
+   [share]
+   path = /some/share
+   read only = Yes
+   guest ok = Yes
+## end file
+
+chkconfig smb on
+service smb restart
+
+# validate
+smbclient -L localhost -U%
+smbclient -L server -Uroot%password
+```
 * Configure host-based and user-based security for the service.
 
+```bash
+## file: /etc/samba/smb.conf
+# the following can go in global or under specific share stanzas
+hosts allow = IP.ADD.RE.SS
+hosts deny = IP.ADD.RE.SS
+```
 ### Provide network shares to specific clients.
 ### Provide network shares suitable for group collaboration.
 
