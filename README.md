@@ -130,7 +130,7 @@ tar czf example-1.0.tar.gz example-1.0
 cp example-1.0.tar.gz rpmbuild/SOURCES
 rpmdev-newspec rpmbuild/SPECS/example.spec
 # edit rpmbuild/SPECS/example.spec accordingly
-rpm -ba rpmbuild/SPECS/example.spec
+rpmbuild -ba rpmbuild/SPECS/example.spec
 ```
 ### Configure a system as an iSCSI initiator that persistently mounts an iSCSI target.
 ```bash
