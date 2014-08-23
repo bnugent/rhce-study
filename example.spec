@@ -27,7 +27,8 @@ This is just my description
 rm -rf $RPM_BUILD_ROOT
 #make install DESTDIR=$RPM_BUILD_ROOT
 install -d -m 0755 $RPM_BUILD_ROOT/opt/example-1.0
-install -m 0644 example-1.0/example-file.txt $RPM_BUILD_ROOT/opt/example-1.0/example-file.txt
+# Make sure that the 'source' material is available in this line '/root/example-1.0/example-file.txt'
+install -m 0644 /root/example-1.0/example-file.txt $RPM_BUILD_ROOT/opt/example-1.0/example-file.txt
 
 
 %clean
