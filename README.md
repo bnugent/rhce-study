@@ -418,7 +418,7 @@ chkconfig nfslock on
 
 ```bash
 cat > /etc/exports <<'EOF'
-/some/folder client.example.com(ro, sync)
+/some/folder client.example.com(ro,sync)
 EOF
 
 exportfs -a
